@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# LINE='include "/configs/projectname.conf"'
+# FILE='lighttpd.conf'
+# FILE=$1
+# LINE=$2
+  
+# skip if no line given
+echo $#
+if [[ $# -lt 2 ]]; then
+  return 1
+fi
+
+# check destination 
+FILE=$1
+
+if [ ! -r $FILE ]; then
+  touch $FILE
+fi
+
+if [ ! -w $FILE ]; then
+  echo "error: file not writable"
+  return 2
+fi
+
+# start with loop
+ARR=( "$@" )
+let CNT=1
+
+for i in "${ARR[@]}"; 
+do
+  if [[ $CNT -gt 1 ]]; then 
+    echo "$i"
+    grep -qF -- "$i" "$FILE" || echo "$i" >> "$FILE"
+  fi
+  CNT=$((CNT+1)) 
+done
+
